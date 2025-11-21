@@ -1,5 +1,6 @@
 package com.casarick.api.dto;
 
+import com.casarick.api.model.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,5 @@ public class EmployeeRequestDTO {
     private String password;
     private boolean isActive;
     private List<PermissionDTO> permissionDTOList;
+    private Branch branch;
 }
