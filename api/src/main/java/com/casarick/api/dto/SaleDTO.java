@@ -17,11 +17,13 @@ public class SaleDTO {
     private Long id;
     private String description;
     private int quantity;
+    private BigDecimal amount;
     private BigDecimal discount;
     private BigDecimal total;
     private LocalDateTime created;
     private LocalDateTime updated;
     private CustomerDTO customerDTO;
     private EmployeeDTO employeeDTO;
+    private BranchDTO branchDTO;
     private List<InventoryDTO> inventoryDTOList;
 }

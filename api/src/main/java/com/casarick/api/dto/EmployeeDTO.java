@@ -18,4 +18,5 @@ public class EmployeeDTO {
     private String phonNumber;
     private boolean isActive;
     private List<PermissionDTO> permissionDTOList;
+    private BranchDTO branchDTO;
 }
