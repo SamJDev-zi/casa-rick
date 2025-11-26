@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Mapper {
 
-    private static ManagerDTO toDTO(Manager manager) {
+    public static ManagerDTO toDTO(Manager manager) {
         if (manager != null) {
             return ManagerDTO.builder()
                     .id(manager.getId())
@@ -20,7 +20,7 @@ public class Mapper {
         return null;
     }
 
-    private static BranchDTO toDTO(Branch branch) {
+    public static BranchDTO toDTO(Branch branch) {
         if (branch != null) {
             return BranchDTO.builder()
                     .id(branch.getId())
@@ -34,7 +34,7 @@ public class Mapper {
         return null;
     }
 
-    private static CategoryDTO toDTO(Category category) {
+    public static CategoryDTO toDTO(Category category) {
         if (category != null) {
             return CategoryDTO.builder()
                     .id(category.getId())
@@ -44,7 +44,17 @@ public class Mapper {
         return null;
     }
 
-    private static ClotheTypeDTO toDTO(ClotheType clotheType) {
+    public static Category toEntity(CategoryDTO categoryDTO) {
+        if (categoryDTO != null) {
+            return Category.builder()
+                    .id(categoryDTO.getId())
+                    .name(categoryDTO.getName())
+                    .build();
+        }
+        return null;
+    }
+
+    public static ClotheTypeDTO toDTO(ClotheType clotheType) {
         if (clotheType != null) {
             return ClotheTypeDTO.builder()
                     .id(clotheType.getId())
@@ -54,19 +64,17 @@ public class Mapper {
         return null;
     }
 
-    private static ProductVariantDTO toDTO(ProductVariant variant) {
-        if (variant != null) {
-            return ProductVariantDTO.builder()
-                    .id(variant.getId())
-                    .categoryDTO(toDTO(variant.getCategory()))
-                    .clotheTypeDTO(toDTO(variant.getClotheType()))
-                    .industryDTO(toDTO(variant.getIndustry()))
+    public static ClotheType toEntity(ClotheTypeDTO categoryDTO) {
+        if (categoryDTO != null) {
+            return ClotheType.builder()
+                    .id(categoryDTO.getId())
+                    .name(categoryDTO.getName())
                     .build();
         }
         return null;
     }
 
-    private static IndustryDTO toDTO(Industry industry) {
+    public static IndustryDTO toDTO(Industry industry) {
         if (industry != null) {
             return IndustryDTO.builder()
                     .id(industry.getId())
@@ -76,21 +84,34 @@ public class Mapper {
         return null;
     }
 
-    private static ProductDTO toDTO(Product product) {
-        if (product != null) {
-            return ProductDTO.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .productVariantDTO(toDTO(product.getVariant()))
-                    .photoURL(product.getPhotoURL())
-                    .barCode(product.getBarCode())
-                    .branchDTO(toDTO(product.getBranch()))
+    public static Industry toEntity(IndustryDTO industryDTO) {
+        if (industryDTO != null) {
+            return Industry.builder()
+                    .id(industryDTO.getId())
+                    .name(industryDTO.getName())
                     .build();
         }
         return null;
     }
 
-    private static EmployeeDTO toDTO(Employee employee) {
+    public static ProductDTO toDTO(Product product) {
+        if (product != null) {
+            return ProductDTO.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .categoryDTO(toDTO(product.getCategory()))
+                    .clotheTypeDTO(toDTO(product.getClotheType()))
+                    .industryDTO(toDTO(product.getIndustry()))
+                    .color(product.getColor())
+                    .size(product.getSize())
+                    .photoURL(product.getPhotoURL())
+                    .barCode(product.getBarCode())
+                    .build();
+        }
+        return null;
+    }
+
+    public static EmployeeDTO toDTO(Employee employee) {
         if (employee != null) {
 
             List<PermissionDTO> permissionDTOs = employee.getPermissionList().stream()
@@ -110,7 +131,7 @@ public class Mapper {
         return null;
     }
 
-    private static PermissionDTO toDTO(Permission permission) {
+    public static PermissionDTO toDTO(Permission permission) {
         if (permission != null) {
             return PermissionDTO.builder()
                     .id(permission.getId())
@@ -120,7 +141,17 @@ public class Mapper {
         return null;
     }
 
-    private static Employee toEntity(EmployeeRequestDTO employeeRequestDTO, List<Permission> permissions, Branch branch) {
+    public static Permission toEntity(PermissionDTO permissionDTO) {
+        if (permissionDTO != null) {
+            return Permission.builder()
+                    .id(permissionDTO.getId())
+                    .name(permissionDTO.getName())
+                    .build();
+        }
+        return null;
+    }
+
+    public static Employee toEntity(EmployeeRequestDTO employeeRequestDTO, List<Permission> permissions, Branch branch) {
         if (employeeRequestDTO != null) {
             return Employee.builder()
                     .name(employeeRequestDTO.getName())
@@ -134,7 +165,7 @@ public class Mapper {
         return null;
     }
 
-    private static Manager toEntity(ManagerRequestDTO managerDTO) {
+    public static Manager toEntity(ManagerRequestDTO managerDTO) {
         if (managerDTO != null) {
             return Manager.builder()
                     .name(managerDTO.getName())
@@ -145,7 +176,7 @@ public class Mapper {
         return null;
     }
 
-    private static SaleDTO toDTO(Sale sale) {
+    public static SaleDTO toDTO(Sale sale) {
         if (sale != null) {
             List<InventoryDTO> inventoryDTOList = sale.getInventoryList().stream()
                     .map(Mapper::toDTO)
@@ -169,7 +200,7 @@ public class Mapper {
         return null;
     }
 
-    private static InventoryDTO toDTO(Inventory inventory) {
+    public static InventoryDTO toDTO(Inventory inventory) {
         if (inventory != null) {
             BigDecimal unitProfit = inventory.getSalePrice().subtract(inventory.getCostPrice());
 
@@ -190,7 +221,7 @@ public class Mapper {
         return null;
     }
 
-    private static CustomerDTO toDTO(Customer customer) {
+    public static CustomerDTO toDTO(Customer customer) {
         if (customer != null) {
             return CustomerDTO.builder()
                     .id(customer.getId())
@@ -202,7 +233,7 @@ public class Mapper {
         return null;
     }
 
-    private static ReservationDTO toDTO(Reservation reservation) {
+    public static ReservationDTO toDTO(Reservation reservation) {
         if (reservation != null) {
             List<InventoryDTO> inventoryDTOList = reservation.getInventoryList().stream()
                     .map(Mapper::toDTO)
