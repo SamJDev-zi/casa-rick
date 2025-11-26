@@ -32,21 +32,33 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(
-            name = "product_variant_id",
-            referencedColumnName = "product_variant_id"
+            name = "category_id",
+            referencedColumnName = "category_id"
     )
-    private ProductVariant variant;
+    private Category category;
+    @ManyToOne
+    @JoinColumn(
+            name = "clothe_type_id",
+            referencedColumnName = "clothe_type_id"
+    )
+    private ClotheType clotheType;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "industry_id",
+            referencedColumnName = "industry_id"
+    )
+    private Industry industry;
+
+    @Column(name = "product_color")
+    private String color;
+
+    @Column(name = "product_size")
+    private String size;
 
     @Column(name = "product_photo_url")
     private String photoURL;
 
     @Column(name = "product_bar_code_number")
     private String barCode;
-
-    @ManyToOne
-    @JoinColumn(
-            name = "branch_id",
-            referencedColumnName = "branch_id"
-    )
-    private Branch branch;
 }

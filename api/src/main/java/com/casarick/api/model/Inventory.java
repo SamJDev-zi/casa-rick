@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -58,4 +59,9 @@ public class Inventory {
             referencedColumnName = "branch_id"
     )
     private Branch branch;
+
+    @PrePersist
+    protected void onCreate() {
+        this.created = LocalDateTime.now();
+    }
 }

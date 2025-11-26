@@ -12,8 +12,11 @@ import lombok.NoArgsConstructor;
 public class ProductDTO {
     private Long id;
     private String name;
-    private ProductVariantDTO productVariantDTO;
+    private CategoryDTO categoryDTO;
+    private ClotheTypeDTO clotheTypeDTO;
+    private IndustryDTO industryDTO;
+    private String color;
+    private String size;
     private String photoURL;
     private String barCode;
-    private BranchDTO branchDTO;
 }
