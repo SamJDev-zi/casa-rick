@@ -1,18 +1,17 @@
 package com.casarick.api.service;
 
-import com.casarick.api.dto.EmployeeDTO;
+import com.casarick.api.dto.EmployeeResponseDTO;
 import com.casarick.api.dto.EmployeeRequestDTO;
-import com.casarick.api.dto.PermissionDTO;
 import com.casarick.api.exception.NotFoundException;
 import com.casarick.api.mapper.Mapper;
+import com.casarick.api.model.Branch;
 import com.casarick.api.model.Employee;
-import com.casarick.api.model.Permission;
+import com.casarick.api.reposiroty.BranchRepository;
 import com.casarick.api.reposiroty.EmployeeRepository;
 import com.casarick.api.service.imp.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,14 +20,16 @@ public class EmployeeService implements IEmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private BranchRepository branchRepository;
 
     @Override
-    public List<EmployeeDTO> getEmployees() {
+    public List<EmployeeResponseDTO> getEmployees() {
         return employeeRepository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public EmployeeDTO getEmployeeById(Long id) {
+    public EmployeeResponseDTO getEmployeeById(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Employee not found with id: " + id));
 
@@ -36,20 +37,18 @@ public class EmployeeService implements IEmployeeService {
     }
 
     @Override
-    public Optional<EmployeeDTO> getEmployeeByName(String name) {
+    public Optional<EmployeeResponseDTO> getEmployeeByName(String name) {
         Optional<Employee> employeeOptional = employeeRepository.getEmployeeByName(name);
 
         return employeeOptional.map(Mapper::toDTO);
     }
 
     @Override
-    public EmployeeDTO createEmployee(EmployeeRequestDTO requestDTO) {
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO requestDTO) {
         Employee employee = new Employee();
 
-        List<Permission> permissionList = new ArrayList<>();
-        for (PermissionDTO p : requestDTO.getPermissionDTOList()) {
-            permissionList.add(Mapper.toEntity(p));
-        }
+        Branch branch = branchRepository.findById(requestDTO.getBranchId())
+                .orElseThrow(() -> new NotFoundException("Branch not found with id: " + requestDTO.getBranchId()));
 
         employee.setId(requestDTO.getId());
         employee.setName(requestDTO.getName());
@@ -57,30 +56,29 @@ public class EmployeeService implements IEmployeeService {
         employee.setPhoneNumber(requestDTO.getPhonNumber());
         employee.setPassword(requestDTO.getPassword());
         employee.setActive(true);
-        employee.setPermissionList(permissionList);
-        employee.setBranch(requestDTO.getBranch());
+        employee.setPermissionList(requestDTO.getPermissionList());
+        employee.setBranch(branch);
 
         return Mapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
-    public EmployeeDTO updateEmployee(Long id, EmployeeRequestDTO requestDTO) {
+    public EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO requestDTO) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Employee not found by id: " + id));
 
-        List<Permission> permissionList = new ArrayList<>();
-        for (PermissionDTO p : requestDTO.getPermissionDTOList()) {
-            permissionList.add(Mapper.toEntity(p));
-        }
+        Branch branch = branchRepository.findById(requestDTO.getBranchId())
+                .orElseThrow(() -> new NotFoundException("Branch not found with id: " + requestDTO.getBranchId()));
 
         employee.setName(requestDTO.getName());
         employee.setLastName(requestDTO.getLastName());
         employee.setPhoneNumber(requestDTO.getPhonNumber());
         employee.setPassword(requestDTO.getPassword());
         employee.setActive(requestDTO.isActive());
-        employee.setPermissionList(permissionList);
-        employee.setBranch(requestDTO.getBranch());
-        return null;
+        employee.setPermissionList(requestDTO.getPermissionList());
+        employee.setBranch(branch);
+
+        return Mapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override

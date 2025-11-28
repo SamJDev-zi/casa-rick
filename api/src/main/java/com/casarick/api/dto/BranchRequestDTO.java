@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BranchDTO {
+public class BranchRequestDTO {
     private Long id;
     private String name;
     private String address;
     private String phoneNumber;
-    private ManagerDTO manager;
+    private Long managerId;
     private boolean isActive;
 }

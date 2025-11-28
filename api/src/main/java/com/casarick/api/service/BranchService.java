@@ -1,6 +1,7 @@
 package com.casarick.api.service;
 
-import com.casarick.api.dto.BranchDTO;
+import com.casarick.api.dto.BranchRequestDTO;
+import com.casarick.api.dto.BranchResponseDTO;
 import com.casarick.api.exception.NotFoundException;
 import com.casarick.api.mapper.Mapper;
 import com.casarick.api.model.Branch;
@@ -22,47 +23,43 @@ public class BranchService implements IBranchService {
     private ManagerRepository managerRepository;
 
     @Override
-    public List<BranchDTO> getBranches() {
+    public List<BranchResponseDTO> getBranches() {
         return branchRepository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public BranchDTO getBranchByID(Long id) {
+    public BranchResponseDTO getBranchByID(Long id) {
         Branch branch = branchRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Branch not found"));
+                .orElseThrow(() -> new NotFoundException("Branch not found with ny id: " + id));
 
         return Mapper.toDTO(branch);
     }
 
     @Override
-    public BranchDTO createBranches(Branch branch, Long managerID) {
-        if (branch == null) {
+    public BranchResponseDTO createBranches(BranchRequestDTO branchDTO) {
+        if (branchDTO == null) {
             throw new IllegalArgumentException("Branch object cannot be null for creation.");
         }
 
-        Manager manager = managerRepository.findById(managerID)
-                .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerID));
+        Manager manager = managerRepository.findById(branchDTO.getManagerId())
+                .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + branchDTO.getManagerId()));
 
-        branch.setManager(manager);
+        Branch branch = Mapper.toEntity(branchDTO, manager);
         branch.setActive(true);
 
         return Mapper.toDTO(branchRepository.save(branch));
     }
 
     @Override
-    public BranchDTO updateBranch(Long id, BranchDTO branchDTO, Long managerId) {
+    public BranchResponseDTO updateBranch(Long id, BranchRequestDTO branchRequestDTO) {
         Branch branch = branchRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("branch not found"));
+                .orElseThrow(() -> new NotFoundException("branch not found with id: " + id));
 
-        branch.setName(branchDTO.getName());
-        branch.setAddress(branchDTO.getAddress());
-        branch.setPhoneNumber(branchDTO.getPhoneNumber());
-        branch.setActive(branchDTO.isActive());
+        Manager manager = managerRepository.findById(branchRequestDTO.getManagerId())
+                .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + branchRequestDTO.getManagerId()));
 
-        Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
-
-        branch.setManager(manager);
+        branch = Mapper.toEntity(branchRequestDTO, manager);
+        branch.setActive(true);
 
         return Mapper.toDTO(branchRepository.save(branch));
     }

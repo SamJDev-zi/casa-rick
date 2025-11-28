@@ -13,17 +13,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SaleDTO {
+public class ReservationResponseDTO {
     private Long id;
     private String description;
-    private int quantity;
     private BigDecimal amount;
-    private BigDecimal discount;
-    private BigDecimal total;
+    private BigDecimal balance;
+    private String status;
+    private int quantity;
     private LocalDateTime created;
     private LocalDateTime updated;
+    private LocalDateTime expirationDate;
     private CustomerDTO customerDTO;
-    private EmployeeDTO employeeDTO;
-    private BranchDTO branchDTO;
-    private List<InventoryDTO> inventoryDTOList;
+    private EmployeeResponseDTO employeeResponseDTO;
+    private BranchResponseDTO branch;
+    private List<InventoryResponseDTO> inventoryList;
 }

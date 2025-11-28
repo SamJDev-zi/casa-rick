@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 public class Mapper {
 
-    public static ManagerDTO toDTO(Manager manager) {
+    public static ManagerResponseDTO toDTO(Manager manager) {
         if (manager != null) {
-            return ManagerDTO.builder()
+            return ManagerResponseDTO.builder()
                     .id(manager.getId())
                     .name(manager.getName())
                     .lastName(manager.getLastName())
@@ -20,15 +20,37 @@ public class Mapper {
         return null;
     }
 
-    public static BranchDTO toDTO(Branch branch) {
+    public static Manager toEntity(ManagerRequestDTO managerRequestDTO) {
+        if (managerRequestDTO != null) {
+            return Manager.builder()
+                    .name(managerRequestDTO.getName())
+                    .lastName(managerRequestDTO.getLastName())
+                    .password(managerRequestDTO.getPassword())
+                    .build();
+        }
+        return null;
+    }
+
+    public static BranchResponseDTO toDTO(Branch branch) {
         if (branch != null) {
-            return BranchDTO.builder()
+            return BranchResponseDTO.builder()
                     .id(branch.getId())
                     .name(branch.getName())
                     .address(branch.getAddress())
                     .isActive(branch.isActive())
                     .manager(toDTO(branch.getManager()))
                     .phoneNumber(branch.getPhoneNumber())
+                    .build();
+        }
+        return null;
+    }
+    public static Branch toEntity(BranchRequestDTO branchRequestDTO, Manager manager) {
+        if (branchRequestDTO != null) {
+            return Branch.builder()
+                    .name(branchRequestDTO.getName())
+                    .address(branchRequestDTO.getAddress())
+                    .isActive(branchRequestDTO.isActive())
+                    .manager(manager)
                     .build();
         }
         return null;
@@ -44,31 +66,11 @@ public class Mapper {
         return null;
     }
 
-    public static Category toEntity(CategoryDTO categoryDTO) {
-        if (categoryDTO != null) {
-            return Category.builder()
-                    .id(categoryDTO.getId())
-                    .name(categoryDTO.getName())
-                    .build();
-        }
-        return null;
-    }
-
     public static ClotheTypeDTO toDTO(ClotheType clotheType) {
         if (clotheType != null) {
             return ClotheTypeDTO.builder()
                     .id(clotheType.getId())
                     .name(clotheType.getName())
-                    .build();
-        }
-        return null;
-    }
-
-    public static ClotheType toEntity(ClotheTypeDTO categoryDTO) {
-        if (categoryDTO != null) {
-            return ClotheType.builder()
-                    .id(categoryDTO.getId())
-                    .name(categoryDTO.getName())
                     .build();
         }
         return null;
@@ -84,19 +86,31 @@ public class Mapper {
         return null;
     }
 
-    public static Industry toEntity(IndustryDTO industryDTO) {
-        if (industryDTO != null) {
-            return Industry.builder()
-                    .id(industryDTO.getId())
-                    .name(industryDTO.getName())
+    public static PermissionDTO toDTO(Permission permission) {
+        if (permission != null) {
+            return PermissionDTO.builder()
+                    .id(permission.getId())
+                    .name(permission.getName())
                     .build();
         }
         return null;
     }
 
-    public static ProductDTO toDTO(Product product) {
+    public static CustomerDTO toDTO(Customer customer) {
+        if (customer != null) {
+            return CustomerDTO.builder()
+                    .id(customer.getId())
+                    .name(customer.getName())
+                    .lastName(customer.getLastName())
+                    .phoneNumber(customer.getPhoneNumber())
+                    .build();
+        }
+        return null;
+    }
+
+    public static ProductResponseDTO toDTO(Product product) {
         if (product != null) {
-            return ProductDTO.builder()
+            return ProductResponseDTO.builder()
                     .id(product.getId())
                     .name(product.getName())
                     .categoryDTO(toDTO(product.getCategory()))
@@ -111,41 +125,39 @@ public class Mapper {
         return null;
     }
 
-    public static EmployeeDTO toDTO(Employee employee) {
+    public static Product toEntity(ProductRequestDTO productRequestDTO, Category category, ClotheType type, Industry industry) {
+        if (productRequestDTO != null) {
+            return Product.builder()
+                    .id(productRequestDTO.getId())
+                    .name(productRequestDTO.getName())
+                    .category(category)
+                    .clotheType(type)
+                    .industry(industry)
+                    .color(productRequestDTO.getColor())
+                    .size(productRequestDTO.getSize())
+                    .photoURL(productRequestDTO.getPhotoURL())
+                    .barCode(productRequestDTO.getBarCode())
+                    .build();
+        }
+        return null;
+    }
+
+    //Revisar
+    public static EmployeeResponseDTO toDTO(Employee employee) {
         if (employee != null) {
 
             List<PermissionDTO> permissionDTOs = employee.getPermissionList().stream()
                     .map(Mapper::toDTO)
                     .toList();
 
-            return EmployeeDTO.builder()
+            return EmployeeResponseDTO.builder()
                     .id(employee.getId())
                     .name(employee.getName())
                     .lastName(employee.getLastName())
                     .isActive(employee.isActive())
                     .phonNumber(employee.getPhoneNumber())
                     .permissionDTOList(permissionDTOs)
-                    .branchDTO(toDTO(employee.getBranch()))
-                    .build();
-        }
-        return null;
-    }
-
-    public static PermissionDTO toDTO(Permission permission) {
-        if (permission != null) {
-            return PermissionDTO.builder()
-                    .id(permission.getId())
-                    .name(permission.getName())
-                    .build();
-        }
-        return null;
-    }
-
-    public static Permission toEntity(PermissionDTO permissionDTO) {
-        if (permissionDTO != null) {
-            return Permission.builder()
-                    .id(permissionDTO.getId())
-                    .name(permissionDTO.getName())
+                    .branch(toDTO(employee.getBranch()))
                     .build();
         }
         return null;
@@ -164,25 +176,15 @@ public class Mapper {
         }
         return null;
     }
+    //Revisar
 
-    public static Manager toEntity(ManagerRequestDTO managerDTO) {
-        if (managerDTO != null) {
-            return Manager.builder()
-                    .name(managerDTO.getName())
-                    .lastName(managerDTO.getLastName())
-                    .password(managerDTO.getPassword())
-                    .build();
-        }
-        return null;
-    }
-
-    public static SaleDTO toDTO(Sale sale) {
+    public static SaleResponseDTO toDTO(Sale sale) {
         if (sale != null) {
-            List<InventoryDTO> inventoryDTOList = sale.getInventoryList().stream()
+            List<InventoryResponseDTO> inventoryRequestDTOList = sale.getInventoryList().stream()
                     .map(Mapper::toDTO)
                     .collect(Collectors.toList());
 
-            return SaleDTO.builder()
+            return SaleResponseDTO.builder()
                     .id(sale.getId())
                     .description(sale.getDescription())
                     .quantity(sale.getQuantity())
@@ -192,54 +194,79 @@ public class Mapper {
                     .created(sale.getCreated())
                     .updated(sale.getUpdated())
                     .customerDTO(toDTO(sale.getCustomer()))
-                    .employeeDTO(toDTO(sale.getEmployee()))
-                    .branchDTO(toDTO(sale.getBranch()))
-                    .inventoryDTOList(inventoryDTOList)
+                    .employeeResponseDTO(toDTO(sale.getEmployee()))
+                    .branch(toDTO(sale.getBranch()))
+                    .inventoryList(inventoryRequestDTOList)
                     .build();
         }
         return null;
     }
 
-    public static InventoryDTO toDTO(Inventory inventory) {
+    public static Sale toEntity(SaleRequestDTO saleRequestDTO, Customer customer, Employee employee, Branch branch, List<Inventory> inventoryList) {
+        if (saleRequestDTO != null) {
+
+            return Sale.builder()
+                    .id(saleRequestDTO.getId())
+                    .description(saleRequestDTO.getDescription())
+                    .quantity(saleRequestDTO.getQuantity())
+                    .amount(saleRequestDTO.getAmount())
+                    .discount(saleRequestDTO.getDiscount())
+                    .total(saleRequestDTO.getTotal())
+                    .created(saleRequestDTO.getCreated())
+                    .updated(saleRequestDTO.getUpdated())
+                    .customer(customer)
+                    .employee(employee)
+                    .branch(branch)
+                    .inventoryList(inventoryList)
+                    .build();
+        }
+        return null;
+    }
+
+    public static InventoryResponseDTO toDTO(Inventory inventory) {
         if (inventory != null) {
             BigDecimal unitProfit = inventory.getSalePrice().subtract(inventory.getCostPrice());
 
             BigDecimal totalProfit = unitProfit.multiply(BigDecimal.valueOf(inventory.getStock()));
 
-            return InventoryDTO.builder()
+            return InventoryResponseDTO.builder()
                     .id(inventory.getId())
-                    .productDTO(toDTO(inventory.getProduct()))
+                    .productRequestDTO(toDTO(inventory.getProduct()))
                     .stock(inventory.getStock())
                     .costPrice(inventory.getCostPrice())
                     .salePrice(inventory.getSalePrice())
                     .created(inventory.getCreated())
                     .updated(inventory.getUpdated())
-                    .branchDTO(toDTO(inventory.getBranch()))
+                    .branch(toDTO(inventory.getBranch()))
                     .aproximateProfit(totalProfit)
                     .build();
         }
         return null;
     }
 
-    public static CustomerDTO toDTO(Customer customer) {
-        if (customer != null) {
-            return CustomerDTO.builder()
-                    .id(customer.getId())
-                    .name(customer.getName())
-                    .lastName(customer.getLastName())
-                    .phoneNumber(customer.getPhoneNumber())
+    public static Inventory toEntity(InventoryRequestDTO inventoryRequestDTO, Product product, Branch branch) {
+        if (product != null) {
+            return Inventory.builder()
+                    .id(inventoryRequestDTO.getId())
+                    .product(product)
+                    .stock(inventoryRequestDTO.getStock())
+                    .costPrice(inventoryRequestDTO.getCostPrice())
+                    .salePrice(inventoryRequestDTO.getSalePrice())
+                    .created(inventoryRequestDTO.getCreated())
+                    .updated(inventoryRequestDTO.getUpdated())
+                    .branch(branch)
                     .build();
         }
         return null;
     }
 
-    public static ReservationDTO toDTO(Reservation reservation) {
+    public static ReservationResponseDTO toDTO(Reservation reservation) {
         if (reservation != null) {
-            List<InventoryDTO> inventoryDTOList = reservation.getInventoryList().stream()
+            List<InventoryResponseDTO> inventoryList = reservation.getInventoryList().stream()
                     .map(Mapper::toDTO)
                     .collect(Collectors.toList());
 
-            return ReservationDTO.builder()
+            return ReservationResponseDTO.builder()
                     .id(reservation.getId())
                     .description(reservation.getDescription())
                     .amount(reservation.getAmount())
@@ -250,9 +277,31 @@ public class Mapper {
                     .expirationDate(reservation.getExpirationDate())
                     .updated(reservation.getUpdated())
                     .customerDTO(toDTO(reservation.getCustomer()))
-                    .employeeDTO(toDTO(reservation.getEmployee()))
-                    .branchDTO(toDTO(reservation.getBranch()))
-                    .inventoryDTOList(inventoryDTOList)
+                    .employeeResponseDTO(toDTO(reservation.getEmployee()))
+                    .branch(toDTO(reservation.getBranch()))
+                    .inventoryList(inventoryList)
+                    .build();
+        }
+        return null;
+    }
+
+    public static Reservation toEntity(ReservationRequestDTO reservationRequestDTO, Customer customer, Employee employee, Branch branch, List<Inventory> inventoryList) {
+        if (reservationRequestDTO != null) {
+
+            return Reservation.builder()
+                    .id(reservationRequestDTO.getId())
+                    .description(reservationRequestDTO.getDescription())
+                    .amount(reservationRequestDTO.getAmount())
+                    .balance(reservationRequestDTO.getBalance())
+                    .status(reservationRequestDTO.getStatus())
+                    .quantity(reservationRequestDTO.getQuantity())
+                    .created(reservationRequestDTO.getCreated())
+                    .expirationDate(reservationRequestDTO.getExpirationDate())
+                    .updated(reservationRequestDTO.getUpdated())
+                    .customer(customer)
+                    .employee(employee)
+                    .branch(branch)
+                    .inventoryList(inventoryList)
                     .build();
         }
         return null;

@@ -25,7 +25,7 @@ public class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO getCustomerBtId(Long id) {
         Customer customer = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " +id));
 
         return Mapper.toDTO(customer);
     }
@@ -38,7 +38,7 @@ public class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         Customer customer = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Customer not found"));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         customer.setName(customerDTO.getName());
         customer.setLastName(customer.getLastName());
@@ -50,7 +50,7 @@ public class CustomerService implements ICustomerService {
     @Override
     public void deleteCustomer(Long id) {
         Customer customer = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Customer not found by ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         repository.delete(customer);
     }

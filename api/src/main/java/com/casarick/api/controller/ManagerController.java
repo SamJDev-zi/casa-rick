@@ -1,6 +1,6 @@
 package com.casarick.api.controller;
 
-import com.casarick.api.dto.ManagerDTO;
+import com.casarick.api.dto.ManagerResponseDTO;
 import com.casarick.api.dto.ManagerRequestDTO;
 import com.casarick.api.service.imp.IManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,26 +26,26 @@ public class ManagerController {
     private IManagerService service;
 
     @GetMapping
-    public ResponseEntity<List<ManagerDTO>> getManagers() {
+    public ResponseEntity<List<ManagerResponseDTO>> getManagers() {
         return ResponseEntity.ok(service.getManagers());
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<ManagerDTO> getManagerByName(@PathVariable String name) {
-        Optional<ManagerDTO> managerOptional = service.getManagerByName(name);
+    public ResponseEntity<ManagerResponseDTO> getManagerByName(@PathVariable String name) {
+        Optional<ManagerResponseDTO> managerOptional = service.getManagerByName(name);
 
         return managerOptional.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ManagerDTO> createManager(@RequestBody ManagerRequestDTO request) {
-        ManagerDTO manager = service.createManager(request);
+    public ResponseEntity<ManagerResponseDTO> createManager(@RequestBody ManagerRequestDTO request) {
+        ManagerResponseDTO manager = service.createManager(request);
         return ResponseEntity.created(URI.create("/api/managers" + manager.getName())).body(manager);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ManagerDTO> updateManager(@PathVariable Long id, @RequestBody ManagerRequestDTO request) {
+    public ResponseEntity<ManagerResponseDTO> updateManager(@PathVariable Long id, @RequestBody ManagerRequestDTO request) {
         return ResponseEntity.ok(service.updateManager(id, request));
     }
 

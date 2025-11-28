@@ -12,16 +12,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InventoryDTO {
+public class InventoryRequestDTO {
     private Long id;
-    private ProductDTO productDTO;
+    private Long productId;
     private int stock;
     private BigDecimal costPrice;
     private BigDecimal salePrice;
     private LocalDateTime created;
     private LocalDateTime updated;
-    private BranchDTO branchDTO;
-
-    //campo calculado (stock * salePrice) - (stock * costPrice)
-    private BigDecimal aproximateProfit;
+    private Long branchId;
 }

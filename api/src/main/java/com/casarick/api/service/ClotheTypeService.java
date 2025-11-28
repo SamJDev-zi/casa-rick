@@ -26,7 +26,7 @@ public class ClotheTypeService implements IClotheTypeService {
     @Override
     public ClotheTypeDTO getClothTypeById(Long id) {
         ClotheType type = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Clothe type not found"));
+                .orElseThrow(() -> new NotFoundException("Clothe type not found with id: " +id));
 
         return Mapper.toDTO(type);
     }

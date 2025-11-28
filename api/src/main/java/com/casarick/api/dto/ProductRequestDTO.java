@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductDTO {
+public class ProductRequestDTO {
     private Long id;
     private String name;
-    private CategoryDTO categoryDTO;
-    private ClotheTypeDTO clotheTypeDTO;
-    private IndustryDTO industryDTO;
+    private Long categoryId;
+    private Long clotheTypeId;
+    private Long industryId;
     private String color;
     private String size;
     private String photoURL;

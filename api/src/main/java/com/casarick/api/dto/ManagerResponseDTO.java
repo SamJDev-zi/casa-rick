@@ -1,24 +1,16 @@
 package com.casarick.api.dto;
 
-import com.casarick.api.model.Permission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EmployeeRequestDTO {
+public class ManagerResponseDTO {
     private Long id;
     private String name;
     private String lastName;
-    private String phonNumber;
-    private String password;
-    private boolean isActive;
-    private List<Permission> permissionList;
-    private Long branchId;
 }

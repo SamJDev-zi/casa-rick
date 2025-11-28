@@ -1,11 +1,16 @@
 package com.casarick.api.service;
 
-import com.casarick.api.dto.ProductDTO;
+import com.casarick.api.dto.ProductRequestDTO;
+import com.casarick.api.dto.ProductResponseDTO;
 import com.casarick.api.exception.NotFoundException;
 import com.casarick.api.mapper.Mapper;
 import com.casarick.api.model.Category;
+import com.casarick.api.model.ClotheType;
+import com.casarick.api.model.Industry;
 import com.casarick.api.model.Product;
 import com.casarick.api.reposiroty.CategoryRepository;
+import com.casarick.api.reposiroty.ClotheTypeRepository;
+import com.casarick.api.reposiroty.IndustryRepository;
 import com.casarick.api.reposiroty.ProductRepository;
 import com.casarick.api.service.imp.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +26,18 @@ public class ProductService implements IProductService {
     private ProductRepository productRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ClotheTypeRepository clotheTypeRepository;
+    @Autowired
+    private IndustryRepository industryRepository;
 
     @Override
-    public List<ProductDTO> getProduct() {
+    public List<ProductResponseDTO> getProduct() {
         return productRepository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public ProductDTO getProductById(Long id) {
+    public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
@@ -36,43 +45,61 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDTO getProductByCategory(Long id, Long categoryId) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Category not found"));
-
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+    public ProductResponseDTO getProductByCategory(Long id, Long categoryId) {
+        Product product = productRepository.findByIdAndCategoryId(id, categoryId)
+                .orElseThrow(() -> new NotFoundException("Product not found with ID: " + id +
+                        " in Category ID: " + categoryId));
 
         return Mapper.toDTO(product);
     }
 
     @Override
-    public Optional<ProductDTO> getProductByBarCode(String barCode) {
+    public Optional<ProductResponseDTO> getProductByBarCode(String barCode) {
         Optional<Product> productOptional = productRepository.getProductByBarCode(barCode);
         return productOptional.map(Mapper::toDTO);
     }
 
     @Override
-    public ProductDTO createProduct(Product product) {
-        if (product == null) {
+    public ProductResponseDTO createProduct(ProductRequestDTO productDTO) {
+        if (productDTO == null) {
             throw new IllegalArgumentException("ClotheType object cannot be null for creation.");
         }
+
+        Category category = categoryRepository.findById(productDTO.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        ClotheType type = clotheTypeRepository.findById(productDTO.getClotheTypeId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        Industry industry = industryRepository.findById(productDTO.getIndustryId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        Product product = Mapper.toEntity(productDTO, category, type, industry);
 
         return Mapper.toDTO(productRepository.save(product));
     }
 
     @Override
-    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+    public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        product.setName(productDTO.getName());
-        product.setCategory(Mapper.toEntity(productDTO.getCategoryDTO()));
-        product.setClotheType(Mapper.toEntity(productDTO.getClotheTypeDTO()));
-        product.setIndustry(Mapper.toEntity(productDTO.getIndustryDTO()));
-        product.setColor(productDTO.getColor());
-        product.setSize(product.getSize());
-        product.setPhotoURL(product.getPhotoURL());
+        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        ClotheType type = clotheTypeRepository.findById(productRequestDTO.getClotheTypeId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        Industry industry = industryRepository.findById(productRequestDTO.getIndustryId())
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+
+        product.setName(productRequestDTO.getName());
+        product.setCategory(category);
+        product.setClotheType(type);
+        product.setIndustry(industry);
+        product.setColor(productRequestDTO.getColor());
+        product.setSize(productRequestDTO.getSize());
+        product.setPhotoURL(productRequestDTO.getPhotoURL());
         return Mapper.toDTO(productRepository.save(product));
     }
 

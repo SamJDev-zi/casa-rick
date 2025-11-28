@@ -1,6 +1,6 @@
 package com.casarick.api.service;
 
-import com.casarick.api.dto.ManagerDTO;
+import com.casarick.api.dto.ManagerResponseDTO;
 import com.casarick.api.dto.ManagerRequestDTO;
 import com.casarick.api.exception.NotFoundException;
 import com.casarick.api.mapper.Mapper;
@@ -20,24 +20,24 @@ public class ManagerService implements IManagerService {
     private ManagerRepository repository;
 
     @Override
-    public List<ManagerDTO> getManagers() {
+    public List<ManagerResponseDTO> getManagers() {
         return repository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public Optional<ManagerDTO> getManagerByName(String name) {
+    public Optional<ManagerResponseDTO> getManagerByName(String name) {
         Optional<Manager> managerOptional = repository.findByName(name);
         return managerOptional.map(Mapper::toDTO);
     }
 
     @Override
-    public ManagerDTO createManager(ManagerRequestDTO requestDTO) {
+    public ManagerResponseDTO createManager(ManagerRequestDTO requestDTO) {
         Manager manager = Mapper.toEntity(requestDTO);
         return Mapper.toDTO(repository.save(manager));
     }
 
     @Override
-    public ManagerDTO updateManager(Long id, ManagerRequestDTO requestDTO) {
+    public ManagerResponseDTO updateManager(Long id, ManagerRequestDTO requestDTO) {
         Manager manager = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Manager not found"));
 

@@ -1,10 +1,13 @@
 package com.casarick.api.service;
 
-import com.casarick.api.dto.InventoryDTO;
+import com.casarick.api.dto.InventoryRequestDTO;
+import com.casarick.api.dto.InventoryResponseDTO;
 import com.casarick.api.exception.NotFoundException;
 import com.casarick.api.mapper.Mapper;
+import com.casarick.api.model.Branch;
 import com.casarick.api.model.Inventory;
 import com.casarick.api.model.Product;
+import com.casarick.api.reposiroty.BranchRepository;
 import com.casarick.api.reposiroty.InventoryRepository;
 import com.casarick.api.reposiroty.ProductRepository;
 import com.casarick.api.service.imp.IInventoryService;
@@ -22,36 +25,41 @@ public class InventoryService implements IInventoryService {
     private InventoryRepository repository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private BranchRepository branchRepository;
 
     @Override
-    public List<InventoryDTO> getAllInventories() {
+    public List<InventoryResponseDTO> getAllInventories() {
         return repository.findAll().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public InventoryDTO getInventoryById(Long id) {
+    public InventoryResponseDTO getInventoryById(Long id) {
         Inventory inventory = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Inventory not found with id: "+ id));
         return Mapper.toDTO(inventory);
     }
 
     @Override
-    public InventoryDTO createInventory(Inventory inventory, Long productId) {
-        if (inventory == null) {
+    public InventoryResponseDTO createInventory(InventoryRequestDTO inventoryDTO) {
+        if (inventoryDTO == null) {
             throw new IllegalArgumentException("Inventory object cannot be null for creation.");
         }
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+        Product product = productRepository.findById(inventoryDTO.getProductId())
+                .orElseThrow(() -> new NotFoundException("Product not found with id: " + inventoryDTO.getProductId()));
 
-        inventory.setProduct(product);
+        Branch branch = branchRepository.findById(inventoryDTO.getBranchId())
+                .orElseThrow(() -> new NotFoundException("Branch not found with id: " + inventoryDTO.getProductId()));
+
+        Inventory inventory = Mapper.toEntity(inventoryDTO, product, branch);
 
         return Mapper.toDTO(repository.save(inventory));
     }
 
     @Override
-    public InventoryDTO updateInventory(Long id, InventoryDTO inventoryDTO) {
-        if (inventoryDTO == null) {
+    public InventoryResponseDTO updateInventory(Long id, InventoryRequestDTO inventoryRequestDTO) {
+        if (inventoryRequestDTO == null) {
             throw new IllegalArgumentException("Inventory object cannot be null for creation.");
         }
 
