@@ -1,7 +1,7 @@
 package com.casarick.api.service;
 
-import com.casarick.api.dto.InventoryDTO;
-import com.casarick.api.dto.SaleDTO;
+import com.casarick.api.dto.SaleRequestDTO;
+import com.casarick.api.dto.SaleResponseDTO;
 import com.casarick.api.exception.NotFoundException;
 import com.casarick.api.mapper.Mapper;
 import com.casarick.api.model.*;
@@ -30,12 +30,12 @@ public class SaleService implements ISaleService {
     private BranchRepository branchRepository;
 
     @Override
-    public List<SaleDTO> getSales() {
-        return saleRepository.findAll().stream().map(Mapper::toDTO).toList();
+    public List<SaleResponseDTO> getSales() {
+        return saleRepository.findAllWithInventory().stream().map(Mapper::toDTO).toList();
     }
 
     @Override
-    public SaleDTO getSaleById(Long id) {
+    public SaleResponseDTO getSaleById(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Branch not found with id: " + id));
 
@@ -43,22 +43,19 @@ public class SaleService implements ISaleService {
     }
 
     @Override
-    public SaleDTO createSale (SaleDTO saleDTO) {
-        if (saleDTO == null) {
+    public SaleResponseDTO createSale (SaleRequestDTO saleResponseDTO) {
+        if (saleResponseDTO == null) {
             throw new IllegalArgumentException("Sale data cannot be null.");
         }
 
-        Long customerId = saleDTO.getCustomerDTO().getId();
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new NotFoundException("Customer not found ID: " + customerId));
+        Customer customer = customerRepository.findById(saleResponseDTO.getCustomerId())
+                .orElseThrow(() -> new NotFoundException("Customer not found ID: " + saleResponseDTO.getCustomerId()));
 
-        Long employeeId = saleDTO.getEmployeeDTO().getId();
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new NotFoundException("Employee not found ID: " + employeeId));
+        Employee employee = employeeRepository.findById(saleResponseDTO.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException("Employee not found ID: " + saleResponseDTO.getEmployeeId()));
 
-        Long branchId = saleDTO.getBranchDTO().getId();
-        Branch branch = branchRepository.findById(branchId)
-                .orElseThrow(() -> new NotFoundException("Branch not found ID: " + branchId));
+        Branch branch = branchRepository.findById(saleResponseDTO.getBranchId())
+                .orElseThrow(() -> new NotFoundException("Branch not found ID: " + saleResponseDTO.getBranchId()));
 
         List<Inventory> inventoriesToSave = new ArrayList<>();
         List<Inventory> saleInventories = new ArrayList<>();
@@ -66,8 +63,8 @@ public class SaleService implements ISaleService {
         BigDecimal subtotalAmount = BigDecimal.ZERO;
         int totalQuantityItems = 0;
 
-        if (saleDTO.getInventoryDTOList() != null) {
-            for (InventoryDTO itemDTO : saleDTO.getInventoryDTOList()) {
+        if (saleResponseDTO.getInventoryList() != null) {
+            for (Inventory itemDTO : saleResponseDTO.getInventoryList()) {
 
                 Inventory dbInventory = inventoryRepository.findById(itemDTO.getId())
                         .orElseThrow(() -> new NotFoundException("Inventory item not found ID: " + itemDTO.getId()));
@@ -94,14 +91,14 @@ public class SaleService implements ISaleService {
 
         inventoryRepository.saveAll(inventoriesToSave);
 
-        BigDecimal discount = saleDTO.getDiscount() != null ? saleDTO.getDiscount() : BigDecimal.ZERO;
+        BigDecimal discount = saleResponseDTO.getDiscount() != null ? saleResponseDTO.getDiscount() : BigDecimal.ZERO;
         BigDecimal totalFinal = subtotalAmount.subtract(discount);
 
         if (totalFinal.compareTo(BigDecimal.ZERO) < 0) totalFinal = BigDecimal.ZERO;
 
 
         Sale sale = Sale.builder()
-                .description(saleDTO.getDescription())
+                .description(saleResponseDTO.getDescription())
                 .quantity(totalQuantityItems)
                 .amount(subtotalAmount)
                 .discount(discount)
@@ -119,23 +116,22 @@ public class SaleService implements ISaleService {
     }
 
     @Override
-    public SaleDTO updateSale(Long id, SaleDTO saleDTO) {
-        // 1. Buscar la venta existente
+    public SaleResponseDTO updateSale(Long id, SaleResponseDTO saleResponseDTO) {
         Sale existingSale = saleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Sale not found with id: " + id));
 
-        existingSale.setDescription(saleDTO.getDescription());
+        existingSale.setDescription(saleResponseDTO.getDescription());
 
-        if (saleDTO.getCustomerDTO() != null && saleDTO.getCustomerDTO().getId() != null) {
-            Customer newCustomer = customerRepository.findById(saleDTO.getCustomerDTO().getId())
+        if (saleResponseDTO.getCustomerDTO() != null && saleResponseDTO.getCustomerDTO().getId() != null) {
+            Customer newCustomer = customerRepository.findById(saleResponseDTO.getCustomerDTO().getId())
                     .orElseThrow(() -> new NotFoundException("Customer not found"));
             existingSale.setCustomer(newCustomer);
         }
 
-        if (saleDTO.getDiscount() != null) {
-            existingSale.setDiscount(saleDTO.getDiscount());
+        if (saleResponseDTO.getDiscount() != null) {
+            existingSale.setDiscount(saleResponseDTO.getDiscount());
 
-            BigDecimal newTotal = existingSale.getAmount().subtract(saleDTO.getDiscount());
+            BigDecimal newTotal = existingSale.getAmount().subtract(saleResponseDTO.getDiscount());
 
             if (newTotal.compareTo(BigDecimal.ZERO) < 0) newTotal = BigDecimal.ZERO;
 

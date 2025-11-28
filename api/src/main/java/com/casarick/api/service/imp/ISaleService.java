@@ -1,13 +1,13 @@
 package com.casarick.api.service.imp;
 
-import com.casarick.api.dto.SaleDTO;
-import com.casarick.api.model.Sale;
+import com.casarick.api.dto.SaleRequestDTO;
+import com.casarick.api.dto.SaleResponseDTO;
 
 import java.util.List;
 
 public interface ISaleService {
-    List<SaleDTO> getSales();
-    SaleDTO getSaleById(Long id);
-    SaleDTO createSale(SaleDTO saleDTO);
-    SaleDTO updateSale(Long id, SaleDTO saleDTO);
+    List<SaleResponseDTO> getSales();
+    SaleResponseDTO getSaleById(Long id);
+    SaleResponseDTO createSale(SaleRequestDTO saleResponseDTO);
+    SaleResponseDTO updateSale(Long id, SaleResponseDTO saleResponseDTO);
 }

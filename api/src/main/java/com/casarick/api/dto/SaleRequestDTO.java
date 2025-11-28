@@ -1,5 +1,6 @@
 package com.casarick.api.dto;
 
+import com.casarick.api.model.Inventory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,18 +14,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReservationDTO {
+public class SaleRequestDTO {
     private Long id;
     private String description;
-    private BigDecimal amount;
-    private BigDecimal balance;
-    private String status;
     private int quantity;
+    private BigDecimal amount;
+    private BigDecimal discount;
+    private BigDecimal total;
     private LocalDateTime created;
-    private LocalDateTime expirationDate;
     private LocalDateTime updated;
-    private CustomerDTO customerDTO;
-    private EmployeeDTO employeeDTO;
-    private BranchDTO branchDTO;
-    private List<InventoryDTO> inventoryDTOList;
+    private Long customerId;
+    private Long employeeId;
+    private Long branchId;
+    private List<Inventory> inventoryList;
 }

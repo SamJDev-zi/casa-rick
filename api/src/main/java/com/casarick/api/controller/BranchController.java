@@ -1,7 +1,7 @@
 package com.casarick.api.controller;
 
-import com.casarick.api.dto.BranchDTO;
-import com.casarick.api.model.Branch;
+import com.casarick.api.dto.BranchRequestDTO;
+import com.casarick.api.dto.BranchResponseDTO;
 import com.casarick.api.service.imp.IBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,31 +18,28 @@ public class BranchController {
     private IBranchService service;
 
     @GetMapping
-    public ResponseEntity<List<BranchDTO>> getBranches() {
+    public ResponseEntity<List<BranchResponseDTO>> getBranches() {
         return ResponseEntity.ok(service.getBranches());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BranchDTO> getBranchById(@PathVariable Long id) {
-        BranchDTO branchDTO = service.getBranchByID(id);
-        return ResponseEntity.ok(branchDTO);
+    public ResponseEntity<BranchResponseDTO> getBranchById(@PathVariable Long id) {
+        BranchResponseDTO BranchResponseDTO = service.getBranchByID(id);
+        return ResponseEntity.ok(BranchResponseDTO);
     }
 
-    @PostMapping("/manager/{managerId}")
-    public ResponseEntity<BranchDTO> createBranch(@PathVariable Long managerId,
-                                                  @RequestBody Branch branch) {
-
-        BranchDTO branchDTO = service.createBranches(branch, managerId);
-        return ResponseEntity.created(URI.create("/api/branches/" + branchDTO.getId())).body(branchDTO);
+    @PostMapping()
+    public ResponseEntity<BranchResponseDTO> createBranch(@RequestBody BranchRequestDTO branch) {
+        BranchResponseDTO BranchResponseDTO = service.createBranches(branch);
+        return ResponseEntity.created(URI.create("/api/branches/" + BranchResponseDTO.getId())).body(BranchResponseDTO);
     }
 
-    @PutMapping("/{id}/manager/{managerId}")
-    public ResponseEntity<BranchDTO> updateBranch(
+    @PutMapping("/{id}")
+    public ResponseEntity<BranchResponseDTO> updateBranch(
             @PathVariable Long id,
-            @PathVariable Long managerId,
-            @RequestBody BranchDTO branchDTO) {
+            @RequestBody BranchRequestDTO branchRequestDTO) {
 
-        BranchDTO updatedBranch = service.updateBranch(id, branchDTO, managerId);
+        BranchResponseDTO updatedBranch = service.updateBranch(id, branchRequestDTO);
 
         return ResponseEntity.ok(updatedBranch);
     }

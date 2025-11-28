@@ -39,7 +39,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryDTO createCategory(Category category) {
-        if (category != null) {
+        if (category == null) {
             throw new IllegalArgumentException("ClotheType object cannot be null for creation.");
         }
         return Mapper.toDTO(repository.save(category));
